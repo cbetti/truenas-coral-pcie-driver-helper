@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+Subject: [truenas] Compat: define no_llseek -> noop_llseek on newer kernels
+
+--- a/src/gasket_core.c
++++ b/src/gasket_core.c
+@@ -21,6 +21,12 @@
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/fs.h>
++#ifndef no_llseek
++/*
++ * Some newer kernels may not export no_llseek; use noop_llseek instead.
++ */
++#define no_llseek noop_llseek
++#endif
+ #include <linux/init.h>
+ #include <linux/of.h>
+ #include <linux/pid_namespace.h>
