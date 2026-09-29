@@ -57,6 +57,17 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "==> [00-bootstrap-env] Repo root: ${ROOT_DIR}"
 
+# A package built for the previous kernel can be left in a failed configure
+# state after a TrueNAS upgrade. APT tries to configure it before installing
+# build dependencies, which prevents us from reaching the compatibility build.
+# Remove only a broken/incomplete package; leave a healthy install alone until
+# dpkg replaces it with the package built later in this workflow.
+GASKET_PACKAGE_STATUS="$(dpkg-query -W -f='${Status}' gasket-dkms 2>/dev/null || true)"
+if [ -n "${GASKET_PACKAGE_STATUS}" ] && [ "${GASKET_PACKAGE_STATUS}" != "install ok installed" ]; then
+  echo "==> Removing incomplete gasket-dkms package (${GASKET_PACKAGE_STATUS})"
+  dpkg --remove --force-remove-reinstreq gasket-dkms
+fi
+
 if ! command -v install-dev-tools >/dev/null 2>&1; then
   echo "ERROR: install-dev-tools not found. Are you on TrueNAS SCALE with dev tools available?"
   exit 1
@@ -84,4 +95,3 @@ echo "==> Installing build dependencies (if missing): ${DEPS[*]}"
 apt-get install -y "${DEPS[@]}"
 
 echo "==> [00-bootstrap-env] Done."
-

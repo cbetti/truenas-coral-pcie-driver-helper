@@ -24,7 +24,9 @@ Running `./scripts/run-on-this-kernel.sh`:
 All state (source tree and built `.deb` files) lives under the repo’s `artifacts/`
 directory.
 
-> **Tested on:** TrueNAS SCALE 25.10.0.1 with kernel `6.12.33-production+truenas`.
+> **Tested on:** TrueNAS SCALE 25.10.0.1 with kernel
+> `6.12.33-production+truenas`, and TrueNAS Community Edition 26.0-BETA.3
+> with kernel `6.18.42-production+truenas`.
 
 ## Requirements
 

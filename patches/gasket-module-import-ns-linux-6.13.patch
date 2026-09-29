@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+Subject: [truenas] Compat: pass string namespace to MODULE_IMPORT_NS on 6.13+
+
+Linux 6.13 changed MODULE_IMPORT_NS() to accept a string literal. Keep the
+token form for older kernels so the same source package builds on TrueNAS
+25.x (Linux 6.12) and TrueNAS 26.x (Linux 6.18).
+
+--- a/src/gasket_page_table.c
++++ b/src/gasket_page_table.c
+@@ -54,7 +54,11 @@
+ #include <linux/vmalloc.h>
+ 
+ #if __has_include(<linux/dma-buf.h>)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
++MODULE_IMPORT_NS("DMA_BUF");
++#else
+ MODULE_IMPORT_NS(DMA_BUF);
++#endif
+ #endif
+ 
+ #include "gasket_constants.h"
